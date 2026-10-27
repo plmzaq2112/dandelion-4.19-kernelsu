@@ -9,6 +9,15 @@ no per-boot setup.
 - **Kernel:** MediaTek stock 4.19 with KernelSU integrated (manual-hook, UAPI v5)
 - **SELinux:** Enforcing
 - **Manager:** official tiann KernelSU Manager — connects directly, no re-sign
+- **Current release:** [v65](https://github.com/plmzaq2112/kernel-ksu-dandelion/releases/tag/v65) (4.19.325-dandelion-ksu, KSU 35002, UAPI v5)
+
+## Build
+
+Reproducible build guide: [`docs/BUILD.md`](docs/BUILD.md) — source on the
+`bakasu` branch, one-shot `build_ksu.sh` / `make_boot.sh`, config asserted
+against the v65 snapshot. After flashing, run
+[`docs/TESTING.md`](docs/TESTING.md); if the device misbehaves,
+[`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
 
 ## Features
 
@@ -27,14 +36,13 @@ behaviour, not a bug. Script-only modules work out of the box.
 
 | Path | Contents |
 |---|---|
-| `bakasu` (branch) | kernel source |
-| `main` (branch) | docs, flash scripts, patches, modules, APK checksums |
-| `flash/` | flash helpers (fastboot / adb-dd) |
-| `apk/` | manager APK checksums |
-| `scripts/` | build / pack / recover helpers |
-| `modules/` | shipped KernelSU modules (e.g. perftune) |
-| `patches/` | KernelSU + performance patches |
-| `docs/` | build journal and reports |
+| `bakasu` (branch) | kernel source + build tooling (`build-tools/`) — start at `docs/BUILD.md` |
+| `main` (branch) | this page: docs, flash helpers, generic image utilities, APK checksums |
+| `docs/` | `BUILD` / `TESTING` / `RELEASE` / `TROUBLESHOOTING` + full test reports |
+| `flash/` | flash helpers (fastboot primary, adb-dd fallback) |
+| `apk/` | manager APK checksum |
+| `scripts/` | generic device / image helpers |
+| `legacy/` | archived assets from superseded kernel lines (reference only) |
 
 ## Downloads
 

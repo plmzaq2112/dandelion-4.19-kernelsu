@@ -6,5 +6,8 @@ See the full text at: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 SPDX-License-Identifier: GPL-2.0-only
 
-The included KernelSU Manager APK is a resign of the GPL-2.0 KernelSU project
-(https://github.com/tiann/KernelSU), Copyright the KernelSU authors.
+The KernelSU Manager APK distributed on the Releases page is the **official
+release of the GPL-2.0 KernelSU project**
+(https://github.com/tiann/KernelSU), Copyright the KernelSU authors — it is
+republished unmodified, with a SHA256 checksum in `apk/` for verification.
+This repository ships no re-signed manager builds.
