@@ -1,29 +1,58 @@
 #!/usr/bin/env bash
-# Flash a boot image on Redmi 9A (dandelion, MT6765)
-# Requires: adb, a device with unlocked bootloader and adb root working.
-# Usage: flash.sh [boot.img]   — defaults to the latest #64 release image.
+# Flash a KernelSU boot image on Redmi 9A (dandelion, MT6765).
+#
+# Requirements: adb + fastboot (platform-tools), unlocked bootloader.
+# Usage: flash.sh <boot.img>        — fastboot (recommended, works in recovery state)
+#        flash.sh --dd <boot.img>   — adb + dd while booted (needs working adbd root)
+#
+# Verify after boot (see docs/TESTING.md):
+#   adb shell uname -r  -> 4.19.325-dandelion-ksu
+#   adb shell getenforce -> Enforcing
+#
+# Rollback: fastboot flash boot <stock boot.img>  — always keep a copy of the
+# stock image; it is both the packing base and the brick-proof fallback.
 set -euo pipefail
-IMG="${1:-$(dirname "$0")/boot-4.19.325-dandelion-ksu-35002.img}"
+
+MODE="fastboot"
+if [ "${1:-}" = "--dd" ]; then MODE="dd"; shift; fi
+IMG="${1:?usage: flash.sh [--dd] <boot.img>}"
 BOOT_DEV="/dev/block/mmcblk0p33"
 
-echo "== verify image =="
-sha256sum -c "$IMG.sha256"
+# checksum sidecar, when present
+DIR=$(dirname "$IMG")
+NAME=$(basename "$IMG")
+if [ -f "$DIR/$NAME.sha256" ]; then
+    echo "== verify checksum =="
+    (cd "$DIR" && sha256sum -c "$NAME.sha256")
+fi
 
-echo "== push =="
-adb push "$IMG" /data/local/tmp/boot.img
+if [ "$MODE" = "fastboot" ]; then
+    echo "== reboot to bootloader =="
+    adb reboot bootloader
+    echo "waiting for fastboot device..."
+    for _ in $(seq 1 30); do
+        fastboot devices 2>/dev/null | grep -q . && break
+        sleep 1
+    done
+    echo "== flash boot =="
+    fastboot flash boot "$IMG"
+    fastboot reboot
+else
+    echo "== push =="
+    adb push "$IMG" /data/local/tmp/boot.img
+    echo "== target must be ${BOOT_DEV} =="
+    adb shell "readlink /dev/block/by-name/boot"
+    read -rp "review the line above, press Enter to dd, or Ctrl+C to abort ... " _
+    adb shell "dd if=/data/local/tmp/boot.img of=${BOOT_DEV} bs=4096 conv=fsync"
+    adb shell "rm -f /data/local/tmp/boot.img"
+    adb reboot
+fi
 
-echo "== verify boot partition target (readlink /dev/block/by-name/boot) =="
-adb root >/dev/null
-adb wait-for-device
-adb shell "readlink /dev/block/by-name/boot" || true
-echo "REVIEW the line above: it MUST be ${BOOT_DEV} unless you change BOOT_DEV."
-
-read -rp "press Enter to flash to ${BOOT_DEV} ... " _
-
-echo "== flash =="
-adb shell "dd if=/data/local/tmp/boot.img of=${BOOT_DEV} bs=4096 conv=fsync"
-echo "== reboot =="
-adb reboot
-echo "Reconnect and check:"
-echo "  adb root && adb shell dmesg | grep -iE 'Crowning|load_allow_uid|stage2'"
-echo "Expected within ~60-120s: 'Crowning manager: me.weishu.kernelsu(uid=...)'"
+echo
+echo "== after boot (~2 min), verify =="
+echo "  adb shell uname -r                 # 4.19.325-dandelion-ksu"
+echo "  adb shell getenforce               # Enforcing"
+echo "  KernelSU Manager connected; su -c id -> uid=0"
+echo
+echo "== rollback if needed =="
+echo "  fastboot flash boot <stock-boot.img>   # or the previous release image"

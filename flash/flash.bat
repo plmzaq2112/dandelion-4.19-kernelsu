@@ -1,28 +1,31 @@
 @echo off
-rem Flash a boot image on Redmi 9A (dandelion, MT6765)
-rem Requires: adb on PATH, unlocked bootloader, adb root working.
-rem Usage: flash.bat [boot.img]  — defaults to the latest #64 release image.
+rem Flash a KernelSU boot image on Redmi 9A (dandelion, MT6765).
+rem Requirements: adb + fastboot on PATH, unlocked bootloader.
+rem Usage: flash.bat <boot.img>   (fastboot mode)
+rem Verify after boot: adb shell uname -r  ->  4.19.325-dandelion-ksu
 setlocal
-set "IMG=%~dp0boot-4.19.325-dandelion-ksu-35002.img"
-set "BOOT_DEV=/dev/block/mmcblk0p33"
+set "IMG=%~1"
+if "%IMG%"=="" set "IMG=%~dp0boot-4.19.325-dandelion-ksu.img"
+if not exist "%IMG%" (
+    echo ERROR: image not found: %IMG%
+    exit /b 1
+)
 
-echo == push ==
-adb push "%IMG%" /data/local/tmp/boot.img || goto :err
+echo == reboot to bootloader ==
+adb reboot bootloader
+echo waiting for fastboot device...
+:wait
+timeout /t 1 /nobreak >nul
+fastboot devices | findstr "." >nul
+if errorlevel 1 goto wait
 
-echo == verify boot partition (should print /dev/block/mmcblk0p33) ==
-adb root
-adb wait-for-device
-adb shell readlink /dev/block/by-name/boot
-
-echo WARNING: review the line above; flash target is %BOOT_DEV%
-set /p go=Press Enter to flash or Ctrl+C to abort...
-
-echo == flash ==
-adb shell "dd if=/data/local/tmp/boot.img of=%BOOT_DEV% bs=4096 conv=fsync" || goto :err
-echo == reboot ==
-adb reboot
-echo Done. Later verify: adb root & adb shell dmesg | grep -iE "Crowning|load_allow_uid|stage2"
+echo == flash boot ==
+fastboot flash boot "%IMG%" || goto :err
+fastboot reboot
+echo.
+echo After boot verify: adb shell uname -r   (expect 4.19.325-dandelion-ksu)
+echo Rollback if needed: fastboot flash boot ^<stock boot.img^>
 goto :eof
 :err
-echo FAILED - check adb connection / image path.
+echo FAILED - check device / image path.
 exit /b 1
