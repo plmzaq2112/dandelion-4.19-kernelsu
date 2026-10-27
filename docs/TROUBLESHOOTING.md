@@ -23,6 +23,14 @@
   Old v2-era managers (e.g. 32601 "gkipatched") belong to the retired
   v11ksu line and will not pair.
 - watch `adb shell dmesg | grep -i kernelsu` for the init line.
+- **fresh manager install needs the Shell superuser toggle** — without it,
+  `su` reports *not found* for uid 2000 even though the kernel is working.
+  A fresh manager install starts with `allow_shell=false` (non-DEBUG build,
+  `core/init.c`).
+- **quirk: while `adb root` is active, `su` "disappears"** — adbd runs as uid 0
+  and KernelSU's sucompat hook only redirects `/system/bin/su` lookups for
+  uid-2000 processes (already-root callers are left alone). Run `adb unroot`
+  and the granted `su -c id` → `uid=0 context=u:r:ksu:s0` works again.
 
 ## Modules don't apply
 
