@@ -20,6 +20,9 @@ O=out bash build-tools/make_boot.sh        # on the bakasu branch
 2. release notes discipline:
    - UTF-8 only (younger terminals flying GBK have produced mojibake before —
      write the notes in a UTF-8 file and pass `--notes-file`)
+   - **do not start the notes body with an `# H1`** — the release page already
+     renders the release title above it; a leading H1 duplicates the version
+     heading (all six historical releases had this, cleaned 2026-10-27)
    - mention the metamodule caveat for module users (TESTING.md footnote)
    - never claim root hiding / susfs features — this line ships none
 3. keep **all** previous release images — each one is a rollback target
