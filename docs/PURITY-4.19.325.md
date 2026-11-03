@@ -12,7 +12,7 @@ minimum MediaTek/dandelion integration required by the device**.
 - Branch: `4.19.325-purity`
 - Release tag: `v4.19.325-purity`
 - Reference build: Dandelion Pure 4.19.325, kernel UTS
-  `4.19.325-dandelion-pure #18 SMP PREEMPT`
+  `4.19.325-dandelion-pure-a12bbb #19 SMP PREEMPT`
 
 ## Purity rules
 

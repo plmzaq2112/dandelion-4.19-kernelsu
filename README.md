@@ -3,12 +3,14 @@
 **Dandelion Pure 4.19.325** — a maintained Linux 4.19.325 purity kernel for the
 Xiaomi Redmi 9A (`dandelion`, MediaTek MT6765), targeting crDroid Android 16.
 
+Maintainer: **a12bbb**
+
 - Baseline branch: `4.19.325-purity`
 - Release tag: `v4.19.325-purity`
 - Base: IsHacker 4.19.325
-- Kernel UTS: `4.19.325-dandelion-pure`
-- Release image: `boot-dandelion-pure-4.19.325.img`
-- Release image SHA256: `3E7364FC2E306D43E42400087B7984BA92DA7EC631978AB4A49629C9D3EFCF51`
+- Kernel UTS: `4.19.325-dandelion-pure-a12bbb`
+- Release image: `boot-dandelion-pure-a12bbb-4.19.325.img`
+- Release image SHA256: `C770A83F0FFE0AC723D7A445825196E524D4DE655C8080F7BACCF29259105AC2`
 
 ## What this repository is
 
@@ -70,11 +72,18 @@ make -j"$(nproc)" ARCH=arm64 O=out-dandelion \
   STRIP=llvm-strip AR=llvm-ar Image.gz
 ```
 
-Boot image packing/AVB recomputation is done with the release tooling used by
-the maintainer; the kernel source itself is the canonical artifact in this
-repository. `blossom_purity_defconfig` and
-`scripts/check_purity_config.sh` are the reproducible configuration/check
-pair.
+Boot image packing/AVB recomputation is done with
+`build-tools/pack_boot.py` followed by `build-tools/recompute_avb.py`:
+
+```sh
+KERNEL_IMG=out-dandelion/arch/arm64/boot/Image.gz \
+  python3 build-tools/pack_boot.py boot-template.img boot-repacked.img
+python3 build-tools/recompute_avb.py boot-template.img boot-repacked.img boot-final.img
+```
+
+`blossom_purity_defconfig` and `scripts/check_purity_config.sh` are the
+reproducible configuration/check pair. The kernel source itself is the
+canonical artifact in this repository.
 
 ## Verification
 
