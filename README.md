@@ -95,6 +95,13 @@ Pack with `build-tools/pack_boot.py` (kernel segment only) and
 
 ## Notes
 
+- CONFIG_MODULES=y makes Kconfig's tristate drivers default to =m; since no
+  modules ship with the boot image, keep required ones built-in explicitly:
+  CONFIG_BATTERY_MT6357=y (battery gauge, otherwise uelgauged crash-loops
+  and Android reports no battery level) and CONFIG_SND_SOC_MT6357_ACCDET=y
+  (headset detection). Re-check the olddefconfig diff against the pure
+  baseline after any config change.
+
 - `CONFIG_KSU_DEBUG=y` currently keeps `allow_shell=true` so `adb shell su`
   works for testing. For a release build turn it off; app grants still work,
   but shell `su` then depends on the manager's Shell toggle (the newer

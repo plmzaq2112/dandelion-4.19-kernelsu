@@ -473,6 +473,10 @@ CONFIG_KSU_MANUAL_HOOK=y
 CONFIG_KSU_MULTI_MANAGER_SUPPORT=y
 CONFIG_KSU_FULL_NAME_FORMAT="%REPO_NAME%-%TAG_NAME%-%COMMIT_SHA%"
 CONFIG_MODULES=y
+# Enabling MODULES turns these tristate drivers into =m by default; they must
+# stay built-in because no modules are shipped with the boot image.
+CONFIG_BATTERY_MT6357=y
+CONFIG_SND_SOC_MT6357_ACCDET=y
 CONFIG_MODULES=y
 CONFIG_KSU=y
 CONFIG_NO_HZ_FULL=y
