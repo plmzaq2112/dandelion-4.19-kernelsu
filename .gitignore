@@ -137,3 +137,7 @@ out-*/
 
 # KernelSU source repo (pinned checkout, not part of kernel git)
 /KernelSU/
+
+# tiann main reference clone (manager-side ABI source only)
+/KSU-tiann-ref/
+/out/
