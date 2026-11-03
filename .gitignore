@@ -134,3 +134,6 @@ all.config
 # Local build outputs and logs
 out-*/
 *.log
+
+# KernelSU source repo (pinned checkout, not part of kernel git)
+/KernelSU/
