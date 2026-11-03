@@ -466,13 +466,15 @@ CONFIG_FTRACE=y
 
 # KernelSU Next v3.4.0-legacy, dynamic syscall table hook
 # (arm64 pt_regs sys_call_table ABI, kernel >= 4.17; no kprobes/modules needed)
+# BakaSU auto-hook line (runtime inline hooks; no kernel source changes)
 CONFIG_KSU=y
 CONFIG_KSU_DEBUG=y
-# CONFIG_KSU_DISABLE_MANAGER is not set
-# CONFIG_KSU_DISABLE_POLICY is not set
-# CONFIG_KSU_ALLOWLIST_WORKAROUND is not set
-# CONFIG_KSU_MANUAL_HOOK is not set
-CONFIG_KSU_SYSCALL_TABLE_HOOK=y
+CONFIG_KSU_MANUAL_HOOK=y
+CONFIG_KSU_MULTI_MANAGER_SUPPORT=y
+CONFIG_KSU_FULL_NAME_FORMAT="%REPO_NAME%-%TAG_NAME%-%COMMIT_SHA%"
+CONFIG_MODULES=y
+CONFIG_MODULES=y
+CONFIG_KSU=y
 CONFIG_NO_HZ_FULL=y
 CONFIG_PREEMPT=y
 CONFIG_PSI=y
