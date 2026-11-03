@@ -1,50 +1,59 @@
-# Dandelion KernelSU
+# Dandelion KernelSU Next
 
 KernelSU build of the Dandelion Pure kernel for the Xiaomi Redmi 9A
 (`dandelion`, MediaTek MT6765), Linux 4.19.325.
 
 - Base: `01-pure-baseline` (`dandelion-4.19-purity`, branch `4.19.325-purity`)
 - Branch: `4.19.325-kernelsu`
-- Root: KernelSU **v0.9.5** (official manager, `me.weishu.kernelsu`)
+- Root: KernelSU **Next v3.4.0-legacy** (manager: KernelSU Next app, `com.rifsxd.ksunext`)
 
-## KernelSU integration (minimal source change)
+## KernelSU integration (zero source-code hooks)
 
-KernelSU is provided as a separate repository pinned with git, symlinked in
-from the drivers tree — the same layout as the official KernelSU setup
+KernelSU Next is provided as a separate repository pinned with git, symlinked
+in from the drivers tree — the same layout as the official KernelSU setup
 script:
 
-- `KernelSU/` — `git clone https://github.com/tiann/KernelSU`, pinned to tag `v0.9.5`
+- `KernelSU/` — `git clone https://github.com/KernelSU-Next/KernelSU-Next`,
+  pinned to tag `v3.4.0-legacy`
 - `drivers/kernelsu` — symlink to `../KernelSU/kernel`
 - `drivers/Makefile` — one added line: `obj-$(CONFIG_KSU) += kernelsu/`
 - `drivers/Kconfig` — one added line: `source "drivers/kernelsu/Kconfig"`
 
-No hooks are patched into `fs/*` or elsewhere: KSU v0.9.5 attaches all of its
-hooks (prctl/rename, execve/faccessat/newfstatat symlink, pts devpts) via
-kprobes at runtime. The defconfig is `blossom_kernelsu_defconfig`, identical
-to `blossom_purity_defconfig` plus:
+No hooks are patched into `fs/*` or elsewhere. The defconfig enables
+`CONFIG_KSU_SYSCALL_TABLE_HOOK=y`: at boot KSU intercepts the desired syscalls
+by patching entries of arm64 `sys_call_table` (pt_regs ABI, kernel >= 4.17)
+and restores them at exit — nothing is added to the kernel's own C code,
+and no kprobes are required.
+
+`blossom_kernelsu_defconfig` is identical to `blossom_purity_defconfig`
+plus:
 
 ```
-CONFIG_MODULES=y      # 4.19 KPROBES depends on MODULES
-CONFIG_KPROBES=y
-# CONFIG_KPROBE_EVENTS is not set
 CONFIG_KSU=y
 # CONFIG_KSU_DEBUG is not set
+# CONFIG_KSU_DISABLE_MANAGER is not set
+# CONFIG_KSU_DISABLE_POLICY is not set
+# CONFIG_KSU_ALLOWLIST_WORKAROUND is not set
+# CONFIG_KSU_MANUAL_HOOK is not set
+CONFIG_KSU_SYSCALL_TABLE_HOOK=y
 ```
 
-`CONFIG_KSU` depends on `CONFIG_OVERLAY_FS`/`CONFIG_EXT4_FS`, both already
-enabled in the base defconfig.
+Note on tag choice: `v3.4.0-legacy` (the `-legacy` line of every KernelSU
+Next release) is the newest tree that keeps the compat layer for pre-5.10
+non-GKI kernels. The plain `v3.4.x` tags dropped old-kernel support, and
+official (tiann) KernelSU dropped non-GKI entirely at v1.0.
 
 ## Updating KernelSU
 
 ```sh
 cd KernelSU
 git fetch --tags
-git checkout <tag>
+git checkout <newest -legacy tag>
 ```
 
-Rebuild afterwards. Tags newer than `v0.9.5` target newer kernel ABI bits
-(e.g. unmaintained `selinux_state` layout, `MODULE_IMPORT_NS` without guards)
-and will need compat work on 4.19.
+Rebuild afterwards. Upgrading from the tinned `-legacy` line is expected to
+stay compile-compatible; migrating to a plain non-legacy tag would need the
+old-kernel compat layer reinstated first.
 
 ## Build
 
