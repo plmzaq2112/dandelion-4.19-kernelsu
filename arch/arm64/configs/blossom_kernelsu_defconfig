@@ -19,7 +19,12 @@ CONFIG_SCHED_TUNE=y
 CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y
 # CONFIG_SYSFS_SYSCALL is not set
 # CONFIG_FHANDLE is not set
-# CONFIG_KALLSYMS is not set
+# KernelSU needs kallsyms for sys_call_table resolution (data symbol)
+CONFIG_KALLSYMS=y
+# KALLSYMS_ALL needs DEBUG_KERNEL; data symbols (sys_call_table) require it
+CONFIG_DEBUG_KERNEL=y
+CONFIG_KALLSYMS_ALL=y
+CONFIG_KALLSYMS_BASE_RELATIVE=y
 # CONFIG_RSEQ is not set
 # CONFIG_VM_EVENT_COUNTERS is not set
 # CONFIG_SLUB_DEBUG is not set
@@ -462,14 +467,12 @@ CONFIG_FTRACE=y
 # KernelSU Next v3.4.0-legacy, dynamic syscall table hook
 # (arm64 pt_regs sys_call_table ABI, kernel >= 4.17; no kprobes/modules needed)
 CONFIG_KSU=y
-# CONFIG_KSU_DEBUG is not set
+CONFIG_KSU_DEBUG=y
 # CONFIG_KSU_DISABLE_MANAGER is not set
 # CONFIG_KSU_DISABLE_POLICY is not set
 # CONFIG_KSU_ALLOWLIST_WORKAROUND is not set
 # CONFIG_KSU_MANUAL_HOOK is not set
 CONFIG_KSU_SYSCALL_TABLE_HOOK=y
-CONFIG_LOCALVERSION="-dandelion-ksu-a12bbb"
-# CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_NO_HZ_FULL=y
 CONFIG_PREEMPT=y
 CONFIG_PSI=y
@@ -489,7 +492,6 @@ CONFIG_SCHED_TUNE=y
 CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y
 # CONFIG_SYSFS_SYSCALL is not set
 # CONFIG_FHANDLE is not set
-# CONFIG_KALLSYMS is not set
 # CONFIG_RSEQ is not set
 # CONFIG_VM_EVENT_COUNTERS is not set
 # CONFIG_SLUB_DEBUG is not set
