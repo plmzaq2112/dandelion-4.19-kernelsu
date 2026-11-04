@@ -1,6 +1,5 @@
 > **Baseline reference only.** This document describes the pre-KernelSU pure
-> release (`v4.19.325-purity`). The active line is `autohook`; see `README.md`
-> and `docs/CHANGELOG.md`.
+> release (`v4.19.325-purity`). The active line is `autohook`; see `README.md`.
 
 # Dandelion Pure 4.19.325 — a12bbb release notes
 
