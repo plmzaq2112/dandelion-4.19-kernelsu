@@ -506,6 +506,18 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
 
 	if (file) {
 		struct inode *inode = file_inode(vma->vm_file);
+		/*
+		 * vma->vm_file must always reference a live struct file, but a
+		 * stale/corrupted mapping can leave f_inode NULL. Do not trade a
+		 * user-triggerable NULL dereference for a kernel panic while
+		 * printing maps.
+		 */
+		if (unlikely(!inode || !inode->i_sb)) {
+			pr_warn_ratelimited("maps: invalid vm_file comm=%s pid=%d vma=%px [%lx-%lx] file=%px inode=%px f_count=%ld\n",
+				current->comm, current->pid, vma, vma->vm_start, vma->vm_end,
+				file, inode, atomic_long_read(&file->f_count));
+			return;
+		}
         dev = inode->i_sb->s_dev;
         ino = inode->i_ino;
         pgoff = ((loff_t)vma->vm_pgoff) << PAGE_SHIFT;
