@@ -1,7 +1,7 @@
 > **⚠️ 本分支（`main`）为旧文档线，不再更新。**
 >
 > 主线已迁移到 **`autohook`** 分支（默认分支）：
-> https://github.com/plmzaq2112/kernel-ksu-dandelion/tree/autohook
+> https://github.com/plmzaq2112/dandelion-4.19-kernelsu/tree/autohook
 >
 > - 主线内核：4.19.325-dandelion-ksu（v66，BakaSU **auto-hook**，零内核源码钩子）
 > - 构建/刷入/验收：见主线仓库的 `README.md` 与 `docs/BUILD.md`
@@ -20,7 +20,7 @@ no per-boot setup.
 - **Kernel:** MediaTek stock 4.19 with KernelSU integrated (manual-hook, UAPI v5)
 - **SELinux:** Enforcing
 - **Manager:** official tiann KernelSU Manager — connects directly, no re-sign
-- **Current release:** [v65](https://github.com/plmzaq2112/kernel-ksu-dandelion/releases/tag/v65) (4.19.325-dandelion-ksu, KSU 35002, UAPI v5)
+- **Current release:** [v65](https://github.com/plmzaq2112/dandelion-4.19-kernelsu/releases/tag/v65) (4.19.325-dandelion-ksu, KSU 35002, UAPI v5)
 
 ## Build
 
@@ -58,7 +58,7 @@ behaviour, not a bug. Script-only modules work out of the box.
 ## Downloads
 
 Boot images, the manager APK and their SHA256 checksums are published on the
-[Releases](https://github.com/plmzaq2112/kernel-ksu-dandelion/releases) page.
+[Releases](https://github.com/plmzaq2112/dandelion-4.19-kernelsu/releases) page.
 
 ```
 fastboot flash boot <boot-image>.img

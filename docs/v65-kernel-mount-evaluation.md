@@ -2,7 +2,7 @@
 
 - 日期：2026-10-15
 - 目标内核：dandelion/Redmi 9A，MT6765，Linux 4.19.325，KPROBES=n
-- 集成线：BakaSU manual-hook（`CONFIG_KSU_MANUAL_HOOK=y`），仓库 `kernel-ksu-dandelion`
+- 集成线：BakaSU manual-hook（`CONFIG_KSU_MANUAL_HOOK=y`），仓库 `dandelion-4.19-kernelsu`
 - 触发背景：v65 验收 T4.3（模块 system/ 文件挂载）初判 FAIL，经 v63/v64/v65 三版本对比 + 根因定位，确认为 KernelSU 3.x 设计前提（需装 metamodule），非内核缺陷。用户提出"能否把挂载做进内核"，并选定方向 **A：内核态文件重定向**，要求先出本评估。
 
 ---
