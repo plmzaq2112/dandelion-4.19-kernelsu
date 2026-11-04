@@ -1,11 +1,11 @@
-> **⚠️ 本分支（`main`）为旧文档线，不再更新。**
->
-> 主线已迁移到 **`autohook`** 分支（默认分支）：
+> **状态：旧文档线（归档），不再更新。** 主线为 `autohook`（默认分支）：
 > https://github.com/plmzaq2112/dandelion-4.19-kernelsu/tree/autohook
 >
-> - 主线内核：4.19.325-dandelion-ksu（v66，BakaSU **auto-hook**，零内核源码钩子）
-> - 构建/刷入/验收：见主线仓库的 `README.md` 与 `docs/BUILD.md`
-> - 历史 v65（manual-hook）源码仍在 `bakasu` 分支
+> 下载与更新日志统一在 Releases 发布：
+> https://github.com/plmzaq2112/dandelion-4.19-kernelsu/releases
+>
+> - 本分支仅保留旧版构建 / 测试 / 排障文档
+> - 历史 v65（manual-hook）源码在 `bakasu` 分支
 
 ---
 
