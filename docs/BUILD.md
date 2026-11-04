@@ -93,9 +93,12 @@ fastboot reboot
 - [ ] `adb shell su -c dmesg | grep -i kernelsu`：无 panic / oops
 - [ ] 开关屏、待机、重启后管理器仍正常
 
-## 7. 调试构建（可选）
+## 7. 调试构建（不随仓库发布）
 
-- `blossom_kernelsu_slub_defconfig`：SLUB 毒化（定位 UAF，会变慢）
-- `blossom_kernelsu_kasan_defconfig`：KASAN（本机 MTK 4.19 无法启动，仅存档）
+调试配置只在本地临时生成，不纳入仓库：
 
-两者均为临时调试用，不要用于发布。
+- SLUB 毒化：`CONFIG_SLUB_DEBUG=y` + `CONFIG_SLUB_DEBUG_ON=y`（对象释放填 `0x6b`，
+  会明显变慢，用于定位 use-after-free）
+- KASAN：本机 MTK 4.19 无法启动（早期崩溃、无日志），不推荐
+
+调试完请回到主配置重新构建，不要用调试镜像发布。

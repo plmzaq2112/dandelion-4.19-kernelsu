@@ -1,3 +1,7 @@
+> **Baseline reference only.** This document describes the pre-KernelSU pure
+> baseline (`4.19.325-purity`). The active line is `autohook`; see `README.md`.
+> It is kept for historical context, not as build instructions for this branch.
+
 # dandelion 4.19.325 purity scope
 
 This document defines what “purity” means for this repository. The

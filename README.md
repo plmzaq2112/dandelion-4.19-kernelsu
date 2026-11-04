@@ -45,6 +45,11 @@ build-tools/pack_boot.py                        仅替换 kernel 段重打包 bo
 build-tools/recompute_avb.py                    AVB 重算（底包带 footer 时使用）
 drivers/kernelsu -> ../KernelSU/kernel          模块软链（clone 后生成）
 docs/BUILD.md                                   构建 / 打包 / 验证细节
+docs/TESTING.md                                 刷后验收清单与功能矩阵
+docs/TROUBLESHOOTING.md                         刷机 / 管理器 / 电量 / adb 排障
+docs/CHANGELOG.md                               版本变更记录
+docs/PURITY-4.19.325.md                         纯净基线范围（历史参考）
+docs/RELEASE-4.19.325.md                        纯净基线发布说明（历史参考）
 ```
 
 模块源码不进本仓库：`KernelSU/` 被 gitignore，首次构建执行
@@ -73,7 +78,10 @@ KERNEL_IMG=out-kernelsu/arch/arm64/boot/Image.gz \
   python3 build-tools/pack_boot.py <base-boot.img> out/boot-dandelion-ksu.img
 ```
 
-详细说明（工具链、配置断言、AVB、刷入、验收）见 [docs/BUILD.md](docs/BUILD.md)。
+详细说明见 [docs/BUILD.md](docs/BUILD.md)；刷后验收见
+[docs/TESTING.md](docs/TESTING.md)；异常排查见
+[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)；版本记录见
+[docs/CHANGELOG.md](docs/CHANGELOG.md)。
 
 ## 刷入
 
