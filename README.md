@@ -1,7 +1,7 @@
 # dandelion-4.19-kernelsu
 
-Xiaomi Redmi 9A（`dandelion`，MT6765）的 KernelSU 内核仓库，基于 Linux 4.19.325，
-面向 Android 16（crDroid）。
+Xiaomi Redmi 9A（`dandelion`，MT6765）的 KernelSU 内核仓库，基于 Linux 4.19.325。
+适配该机型的常见 Android 版本，不绑定特定系统版本。
 
 ## 简介
 
