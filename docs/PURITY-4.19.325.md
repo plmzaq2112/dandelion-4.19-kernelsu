@@ -10,9 +10,9 @@ minimum MediaTek/dandelion integration required by the device**.
 - Device: Xiaomi Redmi 9A (`dandelion`, MT6765)
 - Android target: crDroid Android 16
 - Branch: `4.19.325-purity`
-- Release tag: `v4.19.325-purity`
-- Reference build: Dandelion Pure 4.19.325, kernel UTS
-  `4.19.325-dandelion-pure-a12bbb #19 SMP PREEMPT`
+- Release tag: `v4.19.325-purity.1`
+- Reference build: Dandelion Pure 4.19.325..1, kernel UTS
+  `4.19.325-dandelion-pure-a12bbb #20 SMP PREEMPT`
 
 ## Purity rules
 

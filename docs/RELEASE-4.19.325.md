@@ -1,24 +1,25 @@
-# Dandelion Pure 4.19.325 — a12bbb release notes
+# Dandelion Pure 4.19.325..1 — a12bbb release notes
 
 ## Release
 
-- Tag: `v4.19.325-purity`
+- Tag: `v4.19.325-purity.1`
+- Previous release: `4.19.325..0`
 - Branch: `4.19.325-purity`
 - Maintainer: `a12bbb`
 - Base: IsHacker 4.19.325
 - Device: Xiaomi Redmi 9A / `dandelion` / MT6765
 - Target: crDroid Android 16
 
-This is the first maintained purity baseline. It is a source release; the
-64 MiB boot image is not committed to Git.
+This release adds the proc maps invalid `vm_file` guard. It is a source
+release; the 64 MiB boot image is not committed to Git.
 
 ## Kernel image
 
-- Image: `boot-dandelion-pure-a12bbb-4.19.325.img`
+- Image: `boot-dandelion-pure-a12bbb-4.19.325-hardening.img`
 - SHA256:
-  `C770A83F0FFE0AC723D7A445825196E524D4DE655C8080F7BACCF29259105AC2`
-- Kernel UTS: `4.19.325-dandelion-pure-a12bbb #19 SMP PREEMPT`
-- `Image.gz`: 9,358,086 bytes
+  `4C77C0097D3E5B8FA1691CBA7FEEFC8A5D1CE17CCD045DD3BE142773289C18E4`
+- Kernel UTS: `4.19.325-dandelion-pure-a12bbb #20 SMP PREEMPT`
+- `Image.gz`: 9,358,651 bytes
 
 ## Configuration
 
