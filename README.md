@@ -31,12 +31,12 @@ make ARCH=arm64 O=out-kernelsu ... Image.gz
 
 ## 分支
 
-| 分支 | 说明 |
-|---|---|
-| `autohook` | 主线，零源码钩子（本分支） |
-| `bakasu` | v65 历史线，manual-hook |
-| `main` | 旧文档线 |
-| `v11ksu` | 更早历史线 |
+| 分支 | 状态 | 说明 |
+|---|---|---|
+| `autohook` | 主线（默认） | 零源码钩子的当前开发线 |
+| `bakasu` | 冻结 | v65 历史源码（manual-hook） |
+| `main` | 归档 | 旧文档线，README 指向主线 |
+| `v11ksu` | 归档 | 更早的 KernelSU v11 线 |
 
 ## 说明
 
