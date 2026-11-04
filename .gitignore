@@ -141,3 +141,7 @@ out-*/
 # tiann main reference clone (manager-side ABI source only)
 /KSU-tiann-ref/
 /out/
+
+# KernelSU module integration patches (kept despite *.patch)
+!build-tools/patches/
+!build-tools/patches/*.patch

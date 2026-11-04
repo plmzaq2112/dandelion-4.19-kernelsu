@@ -1,0 +1,45 @@
+From a49ba09d5e15c4ee0e554042bacbdb9adf11e822 Mon Sep 17 00:00:00 2001
+From: a12bbb <198535227+plmzaq2112@users.noreply.github.com>
+Date: Tue, 3 Nov 2026 22:17:26 +0800
+Subject: [PATCH 2/3] uapi: report v5 so the official manager stops asking for
+ a kernel update
+
+---
+ uapi/supercall.h | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/uapi/supercall.h b/uapi/supercall.h
+index 4eb2dfa..28386a0 100644
+--- a/uapi/supercall.h
++++ b/uapi/supercall.h
+@@ -15,7 +15,12 @@
+ #define KSU_FULL_VERSION_STRING 255
+ 
+ // 2: allowlist v4 root profile flags
+-static const __u32 KERNEL_SU_UAPI_VERSION = 2;
++// 3: scoped su-session driver fd
++// 4: add KSU_GET_INFO_FLAG_BUNDLED
++// 5: add EVENT_SERVICES with a start/skip result
++// (auto-hook branch: features negotiated per-ID, so the higher uapi level is
++// safe; the official manager only needs uapi >= manager uapi to stop warning)
++static const __u32 KERNEL_SU_UAPI_VERSION = 5;
+ 
+ /* Magic numbers for reboot hook to install fd */
+ DEFINE_KSU_UAPI_CONST(__u32, KSU_INSTALL_MAGIC1, 0xDEADBEEF)
+@@ -28,11 +33,13 @@ struct ksu_become_daemon_cmd {
+ DEFINE_KSU_UAPI_CONST(__u32, EVENT_POST_FS_DATA, 1)
+ DEFINE_KSU_UAPI_CONST(__u32, EVENT_BOOT_COMPLETED, 2)
+ DEFINE_KSU_UAPI_CONST(__u32, EVENT_MODULE_MOUNTED, 3)
++DEFINE_KSU_UAPI_CONST(__u32, EVENT_SERVICES, 4)
+ 
+ DEFINE_KSU_UAPI_CONST(__u32, KSU_GET_INFO_FLAG_LKM, (1U << 0))
+ DEFINE_KSU_UAPI_CONST(__u32, KSU_GET_INFO_FLAG_MANAGER, (1U << 1))
+ DEFINE_KSU_UAPI_CONST(__u32, KSU_GET_INFO_FLAG_LATE_LOAD, (1U << 2))
+ DEFINE_KSU_UAPI_CONST(__u32, KSU_GET_INFO_FLAG_PR_BUILD, (1U << 3))
++DEFINE_KSU_UAPI_CONST(__u32, KSU_GET_INFO_FLAG_BUNDLED, (1U << 4))
+ 
+ struct ksu_get_info_cmd {
+     __u32 version; /* Output: KERNEL_SU_VERSION */
+-- 
+2.53.0
+

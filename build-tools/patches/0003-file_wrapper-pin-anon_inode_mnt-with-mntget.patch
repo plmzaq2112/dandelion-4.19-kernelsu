@@ -1,0 +1,26 @@
+From 54cf99231304db7ab82b6454bfa47339782cfb94 Mon Sep 17 00:00:00 2001
+From: a12bbb <198535227+plmzaq2112@users.noreply.github.com>
+Date: Wed, 4 Nov 2026 10:26:40 +0800
+Subject: [PATCH 3/3] file_wrapper: pin anon_inode_mnt with mntget
+
+---
+ kernel/infra/file_wrapper.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/infra/file_wrapper.c b/kernel/infra/file_wrapper.c
+index 7d5c690..e44e5ef 100644
+--- a/kernel/infra/file_wrapper.c
++++ b/kernel/infra/file_wrapper.c
+@@ -663,7 +663,8 @@ void __init ksu_file_wrapper_init(void)
+         pr_err("file_wrapper: initialize anon_inode_mnt failed, can't get file: %ld\n", PTR_ERR(dummy));
+         return;
+     }
+-    anon_inode_mnt = dummy->f_path.mnt;
++    /* Pin the mount before dropping the probe file's reference. */
++    anon_inode_mnt = mntget(dummy->f_path.mnt);
+     if (unlikely(!anon_inode_mnt)) {
+         pr_err("file_wrapper: initialize anon_inode_mnt failed, got NULL\n");
+     }
+-- 
+2.53.0
+
