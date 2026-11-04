@@ -1,109 +1,107 @@
-# Dandelion KernelSU (BakaSU auto-hook)
+# kernel-ksu-dandelion
 
-KernelSU build of the Dandelion Pure kernel for the Xiaomi Redmi 9A
-(`dandelion`, MT6765), Linux 4.19.325.
+Xiaomi Redmi 9A（`dandelion`，MT6765）的 KernelSU 内核线，基于 Linux 4.19.325，
+面向 crDroid Android 16（系统指纹 `blossom/...`）。
 
-- Base: `01-pure-baseline` (`dandelion-4.19-purity`, branch `4.19.325-purity`)
-- Branch: `4.19.325-kernelsu`
-- KernelSU module: **BakaSU** `auto-hook` branch (`Baka-SU/BakaSU`)
-- Manager: **official tiann KernelSU v3.3.1 (32680)** — reports `工作中`
+- 主线分支：**`autohook`**
+- 当前发布：**v66** — https://github.com/plmzaq2112/kernel-ksu-dandelion/releases/tag/v66
+- 内核版本串：`4.19.325-dandelion-ksu`
+- KernelSU 模块：**BakaSU `auto-hook`**（UAPI v5，`KSU_VERSION 35002`）
+- 管理器：**tiann 官方 KernelSU v3.3.1（32680）**，直连免重签
 
-## Design: zero kernel-source hooks
+## 特点：零内核源码钩子
 
-The kernel C code is untouched (`fs/*`, `kernel/*` unchanged). All hooks are
-installed at runtime from inside the KernelSU module:
+主线使用 BakaSU 的 auto-hook 机制，**`fs/*`、`kernel/*` 里没有任何 KernelSU 钩子调用点**：
 
-| Hook | Mechanism |
+| 钩子 | 方式 |
 |---|---|
-| execve / execveat | inline hook on `do_execveat_common` |
-| faccessat | inline hook on `__arm64_sys_faccessat` |
-| newfstatat / fstat | inline hook on `__arm64_sys_newfstatat` / `__arm64_sys_fstat` |
-| sys_reboot (driver-fd install + supercall) | inline hook on `__arm64_sys_reboot` |
-| setuid (manager detection, seccomp relax, fd install) | LSM `task_fix_setuid` |
-| init.rc read | LSM |
-| input (safe mode) | input handler |
-| packages.list tracking | LSM `inode_rename` |
+| execve / execveat | inline hook（`do_execveat_common`） |
+| faccessat | inline hook（`__arm64_sys_faccessat`） |
+| newfstatat / fstat / fstat64 | inline hook（对应 syscall wrapper） |
+| sys_reboot（驱动 fd + supercall） | inline hook（`__arm64_sys_reboot`） |
+| setuid（管理器识别 / 解除 seccomp / 装 fd） | LSM `task_fix_setuid` |
+| init.rc 读取 | LSM |
+| input（安全模式） | input handler |
+| packages.list 追踪 | LSM `inode_rename` |
 
-BakaSU's `kernel/tools/auto_hook_detect.mk` selects these automatically when the
-kernel source has no manual hook call sites; with `CONFIG_KALLSYMS_ALL=y` the
-"manual hook required" compile check is skipped by design.
+对比历史 `bakasu` 线（v65，manual-hook）需要 4 处源码调用点，本线不再需要任何源码钩子补丁。
 
-## Pinned module changes (`KernelSU/`, local git commits)
+## 关键改动（相对纯净基线）
 
-1. `kernel/Kbuild` — freeze `KSU_LOCAL_VERSION` to 4302 so the version code is
-   `30000 + 4302 + 700 = 35002` (official manager minimum is 32513) even from a
-   shallow clone/archive.
-2. `uapi/supercall.h` — report `KERNEL_SU_UAPI_VERSION = 5` (+ `EVENT_SERVICES`
-   and `KSU_GET_INFO_FLAG_BUNDLED` constants) so the official v3.3.1 manager
-   stops showing "需要更新内核". Feature discovery stays per-ID, so missing
-   newer features degrade gracefully (e.g. `shell_su_adb_only` unsupported).
+- 内核功能代码只加了一处加固：`fs/proc/task_mmu.c` 的 `show_map_vma` 对非法/失效
+  `vm_file` 记录限速日志并跳过，避免读 `/proc/pid/maps` 时内核 panic
+- 配置增量：`CONFIG_KSU`、`CONFIG_KSU_MANUAL_HOOK`（auto-hook 家族）、
+  `CONFIG_KSU_MULTI_MANAGER_SUPPORT`、`CONFIG_MODULES`、`CONFIG_KALLSYMS(_ALL)`、
+  `CONFIG_BATTERY_MT6357=y`、`CONFIG_SND_SOC_MT6357_ACCDET=y`
+- `CONFIG_KPROBES` 保持关闭（本机 kprobe 不可用，v0.9.5/kprobe 路线会 bootloop）
 
-## defconfig delta (`blossom_kernelsu_defconfig`)
+## 目录结构
 
 ```
-CONFIG_KSU=y
-CONFIG_KSU_DEBUG=y                 # temporary: allow_shell -> adb shell can su
-CONFIG_KSU_MANUAL_HOOK=y           # non-GKI hook family (runtime inline hooks)
-CONFIG_KSU_MULTI_MANAGER_SUPPORT=y # official + unofficial manager signatures
-CONFIG_MODULES=y
-CONFIG_KALLSYMS=y
-CONFIG_DEBUG_KERNEL=y              # required by KALLSYMS_ALL on 4.19
-CONFIG_KALLSYMS_ALL=y              # data symbols + skip manual-hook compile check
-CONFIG_KALLSYMS_BASE_RELATIVE=y
-CONFIG_LOCALVERSION="-dandelion-ksu-a12bbb"
+arch/arm64/configs/blossom_kernelsu_defconfig   主配置（纯净基线 + KSU 增量）
+build-tools/fetch_kernelsu.sh                   拉取 BakaSU 模块并打本地补丁
+build-tools/patches/                            本地模块补丁（3 个）
+build-tools/pack_boot.py                        仅替换 kernel 段重打包 boot
+build-tools/recompute_avb.py                    AVB 重算（底包带 footer 时使用）
+drivers/kernelsu -> ../KernelSU/kernel          模块软链（clone 后生成）
+docs/BUILD.md                                   构建 / 打包 / 验证细节
 ```
 
-No `CONFIG_KPROBES` (kprobes are broken/bootloop-prone on this MTK tree).
+模块源码不进本仓库：`KernelSU/` 被 gitignore，首次构建执行
+`build-tools/fetch_kernelsu.sh`，脚本会 clone `Baka-SU/BakaSU`（`auto-hook` 分支）并
+`git am` 应用 `build-tools/patches/` 下的三个补丁（版本号冻结、UAPI v5、file_wrapper 引用修复）。
 
-## Update KernelSU
+## 快速开始
 
-```sh
-cd KernelSU
-git fetch --tags origin
-git checkout <newer auto-hook commit>
-```
+```bash
+# 1) 取模块 + 建立软链
+bash build-tools/fetch_kernelsu.sh
 
-Keep the two local commits (version freeze + uapi 5) on top.
-
-## Build
-
-```sh
+# 2) 配置 + 编译
 export PATH=/usr/lib/llvm-21/bin:/usr/bin:/bin:$PATH
-
 make ARCH=arm64 O=out-kernelsu \
   CC=clang CROSS_COMPILE=aarch64-linux-gnu- \
   LD=ld.lld NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
   STRIP=llvm-strip AR=llvm-ar blossom_kernelsu_defconfig
-
 make -j"$(nproc)" ARCH=arm64 O=out-kernelsu \
   CC=clang CROSS_COMPILE=aarch64-linux-gnu- \
   LD=ld.lld NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
   STRIP=llvm-strip AR=llvm-ar Image.gz
+
+# 3) 打包（底包必须是可启动的同版 boot.img；只替换 kernel 段）
+KERNEL_IMG=out-kernelsu/arch/arm64/boot/Image.gz \
+  python3 build-tools/pack_boot.py <base-boot.img> out/boot-dandelion-ksu.img
 ```
 
-Pack with `build-tools/pack_boot.py` (kernel segment only) and
-`build-tools/recompute_avb.py`, as in the pure-baseline tree.
+详细说明（工具链、配置断言、AVB、刷入、验收）见 [docs/BUILD.md](docs/BUILD.md)。
 
-## Verified
+## 刷入
 
-- `uname -r` → `4.19.325-dandelion-ksu-a12bbb`
-- Manager v3.3.1 shows **工作中** (kernel 35002, UAPI 5)
-- `su -c id` → `uid=0(root) context=u:r:ksu:s0` (survives reboot)
-- dmesg: `ksu_handle_stat: su->sh!`, `faccessat su->sh!`,
-  `do_execveat_common su found`, `handle_setresuid ...` — inline/LSM hooks live
-- SELinux stays `Enforcing`
+```bash
+fastboot flash boot out/boot-dandelion-ksu.img
+fastboot reboot
+```
 
-## Notes
+底包保留一份，变砖回滚：`fastboot flash boot <base-boot.img>`。
 
-- CONFIG_MODULES=y makes Kconfig's tristate drivers default to =m; since no
-  modules ship with the boot image, keep required ones built-in explicitly:
-  CONFIG_BATTERY_MT6357=y (battery gauge, otherwise uelgauged crash-loops
-  and Android reports no battery level) and CONFIG_SND_SOC_MT6357_ACCDET=y
-  (headset detection). Re-check the olddefconfig diff against the pure
-  baseline after any config change.
+## 分支
 
-- `CONFIG_KSU_DEBUG=y` currently keeps `allow_shell=true` so `adb shell su`
-  works for testing. For a release build turn it off; app grants still work,
-  but shell `su` then depends on the manager's Shell toggle (the newer
-  `shell_su_adb_only` feature ID is not implemented in this module line).
-- Verified working combination: module version 35002 / UAPI 5 / manager 32680.
+| 分支 | 说明 |
+|---|---|
+| `autohook` | **主线**：BakaSU auto-hook，零源码钩子（本分支） |
+| `bakasu` | v65 历史线：BakaSU manual-hook（4 处源码钩子） |
+| `main` | 旧文档/工具仓库线（保留） |
+| `v11ksu` | 更早的 v11 KernelSU 线（保留） |
+
+## 已知事项
+
+- NFC：dandelion 无 NFC 硬件，`com.android.nfc` 的 ANR 循环是 ROM 自带行为，与内核无关
+- 模块 `system/` 目录需要 metamodule（Hybrid Mount / meta-overlayfs）才会挂载；纯脚本模块不受影响
+- 不含 susfs / root 隐藏类特性
+- `/proc/pid/maps` 的异常 `vm_file` 已被加固拦截；若出现
+  `maps: invalid vm_file ...` 日志，请附 dmesg 反馈
+
+## 许可
+
+内核源码遵循 `COPYING` 及各文件自带许可证；KernelSU 模块来自
+[BakaSU](https://github.com/Baka-SU/BakaSU)（GPL-2.0）。
