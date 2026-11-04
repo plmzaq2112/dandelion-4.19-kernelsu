@@ -1,3 +1,14 @@
+> **⚠️ 本分支（`main`）为旧文档线，不再更新。**
+>
+> 主线已迁移到 **`autohook`** 分支（默认分支）：
+> https://github.com/plmzaq2112/kernel-ksu-dandelion/tree/autohook
+>
+> - 主线内核：4.19.325-dandelion-ksu（v66，BakaSU **auto-hook**，零内核源码钩子）
+> - 构建/刷入/验收：见主线仓库的 `README.md` 与 `docs/BUILD.md`
+> - 历史 v65（manual-hook）源码仍在 `bakasu` 分支
+
+---
+
 # KernelSU kernel for Redmi 9A (dandelion) — MT6765
 
 A KernelSU-integrated kernel for the Redmi 9A / 9A Sport (dandelion), built on the
