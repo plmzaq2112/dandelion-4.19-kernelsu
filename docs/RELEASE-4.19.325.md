@@ -15,7 +15,7 @@ release; the 64 MiB boot image is not committed to Git.
 
 ## Kernel image
 
-- Image: `boot-dandelion-pure-a12bbb-4.19.325-hardening.img`
+- Image: `Dandelion-Pure-4.19.325.1.img`
 - SHA256:
   `4C77C0097D3E5B8FA1691CBA7FEEFC8A5D1CE17CCD045DD3BE142773289C18E4`
 - Kernel UTS: `4.19.325-dandelion-pure-a12bbb #20 SMP PREEMPT`
