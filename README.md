@@ -1,10 +1,10 @@
-# kernel-ksu-dandelion
+# dandelion-4.19-kernelsu
 
 Xiaomi Redmi 9A（`dandelion`，MT6765）的 KernelSU 内核线，基于 Linux 4.19.325，
 面向 crDroid Android 16（系统指纹 `blossom/...`）。
 
 - 主线分支：**`autohook`**
-- 当前发布：**v66** — https://github.com/plmzaq2112/kernel-ksu-dandelion/releases/tag/v66
+- 当前发布：**v66** — https://github.com/plmzaq2112/dandelion-4.19-kernelsu/releases/tag/v66
 - 内核版本串：`4.19.325-dandelion-ksu`
 - KernelSU 模块：**BakaSU `auto-hook`**（UAPI v5，`KSU_VERSION 35002`）
 - 管理器：**tiann 官方 KernelSU v3.3.1（32680）**，直连免重签

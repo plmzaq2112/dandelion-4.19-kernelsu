@@ -14,7 +14,7 @@
   避免 `/proc/pid/maps` 触发内核 panic
 - 修复：KernelSU `file_wrapper` 对 `anon_inode_mnt` 增加 `mntget()` 引用
 - 构建：模块补丁与拉取脚本入库（`build-tools/fetch_kernelsu.sh` + `build-tools/patches/`）
-- Release：https://github.com/plmzaq2112/kernel-ksu-dandelion/releases/tag/v66
+- Release：https://github.com/plmzaq2112/dandelion-4.19-kernelsu/releases/tag/v66
 
 ## v65 — 2026-10-14
 
