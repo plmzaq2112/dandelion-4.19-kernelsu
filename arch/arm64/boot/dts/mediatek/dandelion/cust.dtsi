@@ -133,11 +133,6 @@
 		status = "okay";
 	};
 
-	nfc_mtk:nfc@08 {
-		compatible = "mediatek,nfc";
-		reg = <0x08>;
-		status = "okay";
-	};
 
 	ext_buck_lp4_mtk:ext_buck_lp4@57 {
 		compatible = "mediatek,ext_buck_lp4";
@@ -462,17 +457,7 @@
 	status = "okay";
 };
 
-&fpsensor_fp_eint {
-	interrupt-parent = <&pio>;
-	interrupts = <2 IRQ_TYPE_EDGE_FALLING 2 0>;
-	status = "okay";
-};
 
-&irq_nfc {
-	interrupt-parent = <&pio>;
-	interrupts = <10 IRQ_TYPE_LEVEL_HIGH 10 0>;
-	status = "okay";
-};
 
 &chr_stat {
 	interrupt-parent = <&pio>;
