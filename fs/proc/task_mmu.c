@@ -505,22 +505,23 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
 	const char *name = NULL;
 
 	if (file) {
-		struct inode *inode = file_inode(vma->vm_file);
+		struct inode *inode = file_inode(file);
+
 		/*
-		 * vma->vm_file must always reference a live struct file, but a
-		 * stale/corrupted mapping can leave f_inode NULL. Do not trade a
-		 * user-triggerable NULL dereference for a kernel panic while
-		 * printing maps.
+		 * A malformed or expired vm_file must not make proc maps
+		 * dereference an invalid inode or file path.
 		 */
-		if (unlikely(!inode || !inode->i_sb)) {
-			pr_warn_ratelimited("maps: invalid vm_file comm=%s pid=%d vma=%px [%lx-%lx] file=%px inode=%px f_count=%ld\n",
-				current->comm, current->pid, vma, vma->vm_start, vma->vm_end,
-				file, inode, atomic_long_read(&file->f_count));
+		if (unlikely(!inode || !inode->i_sb ||
+			     !file->f_path.dentry || !file->f_path.mnt)) {
+			pr_warn_ratelimited(
+				"proc maps: invalid vm_file %p vma %lx-%lx\n",
+				file, vma->vm_start, vma->vm_end);
 			return;
 		}
-        dev = inode->i_sb->s_dev;
-        ino = inode->i_ino;
-        pgoff = ((loff_t)vma->vm_pgoff) << PAGE_SHIFT;
+
+		dev = inode->i_sb->s_dev;
+		ino = inode->i_ino;
+		pgoff = ((loff_t)vma->vm_pgoff) << PAGE_SHIFT;
 	}
     start = vma->vm_start;
 	end = vma->vm_end;

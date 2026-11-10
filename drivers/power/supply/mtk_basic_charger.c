@@ -362,6 +362,16 @@ static int do_algorithm(struct mtk_charger *info)
 	int ret;
 	int val = 0;
 
+	if (info->cmd_discharging) {
+		chr_err("%s: Force discharging active, skipping algorithm\n", __func__);
+		if (info->chg1_dev) {
+			charger_dev_enable(info->chg1_dev, false);
+			charger_dev_set_charging_current(info->chg1_dev, 0);
+			charger_dev_set_input_current(info->chg1_dev, 0);
+		}
+		return 0;
+	}
+
 	pdata = &info->chg_data[CHG1_SETTING];
 	charger_dev_is_charging_done(info->chg1_dev, &chg_done);
 	is_basic = select_charging_current_limit(info, &info->setting);
@@ -489,6 +499,11 @@ static int enable_charging(struct mtk_charger *info,
 
 	chr_err("%s %d\n", __func__, en);
 
+	if (info->cmd_discharging) {
+		chr_err("%s: Force discharging active, skipping enable charger\n", __func__);
+		en = false;
+	}
+
 	if (en == false) {
 		for (i = 0; i < MAX_ALG_NO; i++) {
 			alg = info->alg[i];
@@ -522,10 +537,12 @@ static int charger_dev_event(struct notifier_block *nb, unsigned long event,
 	case CHARGER_DEV_NOTIFY_EOC:
 		notify.evt = EVT_FULL;
 		notify.value = 0;
-	for (i = 0; i < 10; i++) {
-		alg = info->alg[i];
-		chg_alg_notifier_call(alg, &notify);
-	}
+		for (i = 0; i < MAX_ALG_NO; i++) {
+			alg = info->alg[i];
+			if (alg == NULL)
+				continue;
+			chg_alg_notifier_call(alg, &notify);
+		}
 
 		break;
 	case CHARGER_DEV_NOTIFY_RECHG:

@@ -30,6 +30,8 @@
 #include "mtk_battery.h"
 #include "mtk_battery_table.h"
 
+extern bool g_charging_disabled;
+
 
 struct tag_bootmode {
 	u32 size;
@@ -121,6 +123,7 @@ struct mtk_battery *get_mtk_battery(void)
 	}
 
 	gauge = (struct mtk_gauge *)power_supply_get_drvdata(psy);
+	power_supply_put(psy);
 	if (gauge == NULL) {
 		bm_err("[%s]mtk_gauge is not rdy\n", __func__);
 		return NULL;
@@ -183,7 +186,10 @@ bool is_recovery_mode(void)
 	struct mtk_battery *gm;
 
 	gm = get_mtk_battery();
-	bm_debug("%s, bootmdoe = %d\n", gm->bootmode);
+	if (!gm)
+		return false;
+
+	bm_debug("%s: bootmode = %d\n", __func__, gm->bootmode);
 
 	/* RECOVERY_BOOT */
 	if (gm->bootmode == 2)
@@ -197,7 +203,10 @@ bool is_kernel_power_off_charging(void)
 	struct mtk_battery *gm;
 
 	gm = get_mtk_battery();
-	bm_debug("%s, bootmdoe = %d\n", gm->bootmode);
+	if (!gm)
+		return false;
+
+	bm_debug("%s: bootmode = %d\n", __func__, gm->bootmode);
 
 	/* KERNEL_POWER_OFF_CHARGING_BOOT */
 	if (gm->bootmode == 8)
@@ -259,7 +268,10 @@ static int battery_psy_get_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
-		val->intval = bs_data->bat_status;
+		if (g_charging_disabled)
+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+		else
+			val->intval = bs_data->bat_status;
 		break;
 	case POWER_SUPPLY_PROP_HEALTH:
 		val->intval = bs_data->bat_health;
@@ -773,6 +785,9 @@ int gauge_get_property(enum gauge_property gp,
 		return -ENODEV;
 
 	gauge = (struct mtk_gauge *)power_supply_get_drvdata(psy);
+	power_supply_put(psy);
+	if (gauge == NULL)
+		return -ENODEV;
 	attr = gauge->attr;
 
 	if (attr == NULL) {
@@ -811,6 +826,9 @@ int gauge_set_property(enum gauge_property gp,
 		return -ENODEV;
 
 	gauge = (struct mtk_gauge *)power_supply_get_drvdata(psy);
+	power_supply_put(psy);
+	if (gauge == NULL)
+		return -ENODEV;
 	attr = gauge->attr;
 
 	if (attr == NULL) {
